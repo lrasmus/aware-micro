@@ -1,6 +1,55 @@
 {% extends './common/base.peb' %}
 
 {% block content %}
-URL to join study: {{ studyURL }}<br/>
-<img src="/cache/qrcode.png" width="300px" height="300px" />
+<style>
+  .lcn {
+    font-family: 'Arial';
+  }
+  .title {
+    color: #1E417E;
+    font-weight: bold;
+    font-size: 1.2em;
+  }
+  .box {
+    padding-top: 20px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .header {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+</style>
+
+<div class="lcn container">
+  <div class="box header">
+    <img src="/cache/LCN-LOGO.png" width="172px" height="84px" />
+  </div>
+  <div class="box about">
+    Thank your for your interest in the <a href="">Liver Cirrhosis Network (LCN)</a>.  If you are
+    an enrolled participant in the LCN study, this site will allow you to get set up with the
+    AWARE data collection app on your smartphone.<br/>
+    <br/>
+    You should proceed with AWARE setup only if you have agreed to and signed the LCN study informed consent
+    with a member of the study team and are comfortable with installing and running the app. Remember that using the
+    AWARE app is completely optional, and choosing to not install AWARE or removing it early does not
+    affect your participation in LCN.  Additional information about the data to be collected is in your informed consent.
+  </div>
+  <div class="box">
+    <span class="title">Instructions</span>
+    <ol>
+      <li>Download the AWARE client for <a href="https://itunes.apple.com/jp/app/aware-client-v2/id1455986181">iOS</a> or <a href="http://jenkins.awareframework.com/job/com.aware.phone/">Android</a> (depending on your phone)</li>
+      <li>Open the app and review the prompts that appear about permissions</li>
+      <li>If you agree to the permission requests, grant the permissions to the app</li>
+      <li>Add a new study</li>
+      <li>Scan the QR code below</li>
+      <li>Work with a member of the study team to complete setup of the app</li>
+    </ol>
+  </div>
+  <div class="box">
+    <div>URL to join study: {{ studyURL }}</div>
+    <img src="/cache/qrcode.png" width="300px" height="300px" />
+  </div>
+</div>
 {% endblock content %}

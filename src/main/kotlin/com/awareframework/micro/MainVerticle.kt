@@ -16,7 +16,9 @@ import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.core.net.PemKeyCertOptions
 import io.vertx.core.net.PemTrustOptions
+import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
+import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.client.WebClient
 import io.vertx.ext.web.client.WebClientOptions
 import io.vertx.ext.web.codec.BodyCodec
@@ -72,56 +74,7 @@ class MainVerticle : AbstractVerticle() {
          * Generate QRCode to join the study using Google's Chart API
          */
         router.route(HttpMethod.GET, "/:studyNumber/:studyKey").handler { route ->
-          if (validRoute(
-              study,
-              route.request().getParam("studyNumber").toInt(),
-              route.request().getParam("studyKey")
-            )
-          ) {
-            vertx.fileSystem().delete("./cache/qrcode.png") {
-              if (it.succeeded()) println("Cleared old qrcode...")
-            }
-            vertx.fileSystem().open(
-              "./cache/qrcode.png",
-              OpenOptions().setTruncateExisting(true).setCreate(true).setWrite(true)
-            ) { write ->
-              if (write.succeeded()) {
-                val asyncQrcode = write.result()
-                val webClientOptions = WebClientOptions()
-                  .setKeepAlive(true)
-                  .setPipelining(true)
-                  .setFollowRedirects(true)
-                  .setSsl(true)
-                  .setTrustAll(true)
-
-                val client = WebClient.create(vertx, webClientOptions)
-                val serverURL =
-                  "${getExternalServerHost(serverConfig)}:${getExternalServerPort(serverConfig)}/index.php/${study.getInteger(
-                    "study_number"
-                  )}/${study.getString("study_key")}"
-
-                println("URL encoded for the QRCode is: $serverURL")
-
-                client.get(
-                  443, "chart.googleapis.com",
-                  "/chart?chs=300x300&cht=qr&chl=$serverURL&choe=UTF-8"
-                )
-                  .`as`(BodyCodec.pipe(asyncQrcode, true))
-                  .send { request ->
-                    if (request.succeeded()) {
-                      pebbleEngine.render(JsonObject().put("studyURL", serverURL), "templates/qrcode.peb") { pebble ->
-                        if (pebble.succeeded()) {
-                          route.response().statusCode = 200
-                          route.response().putHeader(HttpHeaders.CONTENT_TYPE, "text/html").end(pebble.result())
-                        }
-                      }
-                    } else {
-                      println("QRCode creation failed: ${request.cause().message}")
-                    }
-                  }
-              }
-            }
-          }
+          renderStudyPage(route, study, serverConfig, pebbleEngine, true)
         }
 
         /**
@@ -253,13 +206,10 @@ class MainVerticle : AbstractVerticle() {
 
         /**
          * Default route, landing page of the server
+         * For LCN - just show the study page, don't require a separate click
          */
         router.route(HttpMethod.GET, "/").handler { route ->
-          route.response().putHeader("content-type", "text/html").end(
-            "Hello from AWARE Micro!<br/>Join study: <a href=\"${getExternalServerHost(serverConfig)}:${getExternalServerPort(serverConfig)}/${study.getInteger(
-              "study_number"
-            )}/${study.getString("study_key")}\">HERE</a>"
-          )
+          renderStudyPage(route, study, serverConfig, pebbleEngine, false)
         }
 
         //Use SSL
@@ -670,5 +620,62 @@ class MainVerticle : AbstractVerticle() {
       return serverConfig.getInteger("external_server_port")
     }
     return serverConfig.getInteger("server_port")
+  }
+
+  private fun renderStudyPage(route: RoutingContext, study: JsonObject, serverConfig: JsonObject, pebbleEngine: PebbleTemplateEngine, checkParams: Boolean) {
+    // Only check the route parameters if instructed to do so
+    if (checkParams && !validRoute(
+        study,
+        route.request().getParam("studyNumber").toInt(),
+        route.request().getParam("studyKey")
+      )
+    ) {
+      println("Invalid parameters for study page")
+      route.response().statusCode = 400
+      return
+    }
+    vertx.fileSystem().delete("./cache/qrcode.png") {
+      if (it.succeeded()) println("Cleared old qrcode...")
+    }
+    vertx.fileSystem().open(
+      "./cache/qrcode.png",
+      OpenOptions().setTruncateExisting(true).setCreate(true).setWrite(true)
+    ) { write ->
+      if (write.succeeded()) {
+        val asyncQrcode = write.result()
+        val webClientOptions = WebClientOptions()
+          .setKeepAlive(true)
+          .setPipelining(true)
+          .setFollowRedirects(true)
+          .setSsl(true)
+          .setTrustAll(true)
+
+        val client = WebClient.create(vertx, webClientOptions)
+        val serverURL =
+          "${getExternalServerHost(serverConfig)}:${getExternalServerPort(serverConfig)}/index.php/${study.getInteger(
+            "study_number"
+          )}/${study.getString("study_key")}"
+
+        println("URL encoded for the QRCode is: $serverURL")
+
+        client.get(
+          443, "chart.googleapis.com",
+          "/chart?chs=300x300&cht=qr&chl=$serverURL&choe=UTF-8"
+        )
+          .`as`(BodyCodec.pipe(asyncQrcode, true))
+          .send { request ->
+            if (request.succeeded()) {
+              pebbleEngine.render(JsonObject().put("studyURL", serverURL), "templates/qrcode.peb") { pebble ->
+                if (pebble.succeeded()) {
+                  route.response().statusCode = 200
+                  route.response().putHeader(HttpHeaders.CONTENT_TYPE, "text/html").end(pebble.result())
+                }
+              }
+            } else {
+              println("QRCode creation failed: ${request.cause().message}")
+            }
+          }
+      }
+    }
   }
 }

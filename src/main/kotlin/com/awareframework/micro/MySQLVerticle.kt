@@ -24,6 +24,7 @@ class MySQLVerticle : AbstractVerticle() {
 
   private lateinit var parameters: JsonObject
   private lateinit var sqlClient: MySQLPool
+  private lateinit var allowedTableNames: ArrayList<String>
 
   override fun start(startPromise: Promise<Void>?) {
     super.start(startPromise)
@@ -58,6 +59,12 @@ class MySQLVerticle : AbstractVerticle() {
 
         // Create the client pool
         sqlClient = MySQLPool.pool(vertx, connectOptions, poolOptions)
+
+        val sensorList = parameters.getJsonArray("sensors")
+        allowedTableNames = ArrayList<String>()
+        for (i in 0 until sensorList.size()) {
+          allowedTableNames.add(sensorList.getJsonObject(i).getString("sensor"))
+        }
 
         eventBus.consumer<JsonObject>("insertData") { receivedMessage ->
           val postData = receivedMessage.body()
@@ -160,6 +167,11 @@ class MySQLVerticle : AbstractVerticle() {
   }
 
   fun deleteData(device_id: String, table: String, data: JsonArray) {
+    if (!allowedTableNames.contains(table)) {
+      println("Invalid table name")
+      return
+    }
+
     sqlClient.getConnection { connectionResult ->
       if (connectionResult.succeeded()) {
         val connection = connectionResult.result()
@@ -196,17 +208,21 @@ class MySQLVerticle : AbstractVerticle() {
     val promise = Promise.promise<Boolean>()
     sqlClient.getConnection { connectionResult ->
       if (connectionResult.succeeded()) {
-        val connect = connectionResult.result()
-        connect.query("CREATE TABLE IF NOT EXISTS `$table` (`_id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, `timestamp` DOUBLE NOT NULL, `device_id` VARCHAR(128) NOT NULL, `data` JSON NOT NULL, INDEX `timestamp_device` (`timestamp`, `device_id`))")
-          .execute()
-          .onFailure { e ->
-            promise.fail(e.message)
-            connect.close()
-          }
-          .onSuccess { _ ->
-            promise.complete(true)
-            connect.close()
-          }
+        if (!allowedTableNames.contains(table)) {
+          promise.fail("Invalid table name")
+        } else {
+          val connect = connectionResult.result()
+          connect.query("CREATE TABLE IF NOT EXISTS `$table` (`_id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, `timestamp` DOUBLE NOT NULL, `device_id` VARCHAR(128) NOT NULL, `data` JSON NOT NULL, INDEX `timestamp_device` (`timestamp`, `device_id`))")
+            .execute()
+            .onFailure { e ->
+              promise.fail(e.message)
+              connect.close()
+            }
+            .onSuccess { _ ->
+              promise.complete(true)
+              connect.close()
+            }
+        }
       } else {
         promise.fail(connectionResult.cause().message)
       }
