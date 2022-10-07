@@ -1,3 +1,6 @@
+## Ignore deploy folder
+deploy/
+
 ### Vert.x ###
 .vertx/
 
