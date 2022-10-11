@@ -60,8 +60,11 @@ class MySQLVerticle : AbstractVerticle() {
         // Create the client pool
         sqlClient = MySQLPool.pool(vertx, connectOptions, poolOptions)
 
-        val sensorList = parameters.getJsonArray("sensors")
         allowedTableNames = ArrayList<String>()
+        allowedTableNames.add("aware_device")
+        allowedTableNames.add("aware_studies")
+        allowedTableNames.add("aware_log")
+        val sensorList = parameters.getJsonArray("sensors")
         for (i in 0 until sensorList.size()) {
           allowedTableNames.add(sensorList.getJsonObject(i).getString("sensor"))
         }
