@@ -65,8 +65,11 @@ class MySQLVerticle : AbstractVerticle() {
         allowedTableNames.add("aware_studies")
         allowedTableNames.add("aware_log")
         val sensorList = parameters.getJsonArray("sensors")
+        // For each sensor we have the actual name of the sensor as a table, as well as another table
+        // named "sensor_{sensorname}"
         for (i in 0 until sensorList.size()) {
           allowedTableNames.add(sensorList.getJsonObject(i).getString("sensor"))
+          allowedTableNames.add("sensor_" + sensorList.getJsonObject(i).getString("sensor"))
         }
 
         eventBus.consumer<JsonObject>("insertData") { receivedMessage ->
