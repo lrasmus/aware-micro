@@ -60,17 +60,67 @@ class MySQLVerticle : AbstractVerticle() {
         // Create the client pool
         sqlClient = MySQLPool.pool(vertx, connectOptions, poolOptions)
 
-        allowedTableNames = ArrayList<String>()
-        allowedTableNames.add("aware_device")
-        allowedTableNames.add("aware_studies")
-        allowedTableNames.add("aware_log")
-        val sensorList = parameters.getJsonArray("sensors")
-        // For each sensor we have the actual name of the sensor as a table, as well as another table
-        // named "sensor_{sensorname}"
-        for (i in 0 until sensorList.size()) {
-          allowedTableNames.add(sensorList.getJsonObject(i).getString("sensor"))
-          allowedTableNames.add("sensor_" + sensorList.getJsonObject(i).getString("sensor"))
-        }
+        // Establish the curated list of tables that we will allow to be created.
+        allowedTableNames = arrayListOf(
+          // AWARE Provider
+          "aware_device", "aware_settings", "aware_plugins", "aware_studies", "aware_log",
+          // Applications
+          "applications_foreground", "applications_history", "applications_notifications", "applications_crashes",
+          // Battery
+          "battery", "battery_discharges", "battery_charges",
+          // Gyroscope
+          "sensor_gyroscope", "gyroscope",
+          // Proximity
+          "sensor_proximity", "proximity",
+          // Rotation
+          "sensor_rotation", "rotation",
+          // Light
+          "sensor_light", "light",
+          // Temperature
+          "sensor_temperature", "temperature",
+          // Barometer
+          "sensor_barometer", "barometer",
+          // Accelerometer
+          "sensor_accelerometer", "accelerometer",
+          // Magnetometer
+          "sensor_magnetometer", "magnetometer",
+          // Gravity
+          "sensor_gravity", "gravity",
+          // MQTT
+          "mqtt_messages", "mqtt_subscriptions",
+          // Communication
+          "calls", "messages",
+          // Telephony
+          "telephony", "gsm", "gsm_neighbor", "cdma",
+          // Linear Accelerometer
+          "sensor_linear_accelerometer", "linear_accelerometer",
+          // Bluetooth
+          "sensor_bluetooth", "bluetooth",
+          // Screen
+          "screen", "touch",
+          // Wi-fi
+          "wifi", "sensor_wifi",
+          // Significant
+          "significant",
+          // Network
+          "network",
+          // Scheduler
+          "scheduler",
+          // Timezone
+          "timezone",
+          // Keyboard
+          "keyboard",
+          // Installations
+          "installations",
+          // Network Traffic
+          "network_traffic",
+          // ESM
+          "esms",
+          // Processor
+          "processor",
+          // Locations
+          "locations"
+        )
 
         eventBus.consumer<JsonObject>("insertData") { receivedMessage ->
           val postData = receivedMessage.body()
