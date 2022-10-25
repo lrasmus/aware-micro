@@ -38,6 +38,8 @@ class MainVerticle : AbstractVerticle() {
     println("AWARE Micro initializing...")
 
     val serverOptions = HttpServerOptions()
+    serverOptions.setMaxChunkSize(35648)
+    serverOptions.setMaxFormAttributeSize(-1)
     val pebbleEngine = PebbleTemplateEngine.create(vertx, PebbleEngine.Builder().cacheActive(false).build())
     val eventBus = vertx.eventBus()
 
