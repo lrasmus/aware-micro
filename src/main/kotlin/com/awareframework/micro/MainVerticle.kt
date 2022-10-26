@@ -56,8 +56,9 @@ class MainVerticle : AbstractVerticle() {
         // prevents Internet Explorer from MIME - sniffing a
         // response away from the declared content-type
         .putHeader("X-Content-Type-Options", "nosniff")
-        // Strict HTTPS (for about ~6Months)
-        .putHeader("Strict-Transport-Security", "max-age=" + 15768000)
+        // Secure HTTP - max-age must be set at least to 31536000 seconds (1 year) and includeSubDomains directive must be specified.
+        // https://www.tenable.com/plugins/was/98715
+        .putHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
         // IE8+ do not allow opening of attachments in the context of this resource
         .putHeader("X-Download-Options", "noopen")
         // enable XSS for IE
@@ -67,7 +68,7 @@ class MainVerticle : AbstractVerticle() {
 
         // The next from Liran Tal's "Learning Security Headers"
         // Only allow XHR from our host
-        .putHeader("Content-Security-Policy", "connect-src 'self'")
+        .putHeader("Content-Security-Policy", "connect-src 'self'; frame-ancestors 'none'; form-action: 'self'; object-src 'none'; upgrade-insecure-requests; block-all-mixed-content")
         // When navigating off pages don't set referrer
         .putHeader("Referrer-Policy", "no-referrer");
       it.next()
