@@ -1,6 +1,9 @@
 ## Ignore deploy folder
 deploy/
 
+## Ignore the QR code, as it will change over time
+cache/qrcode.png
+
 ### Vert.x ###
 .vertx/
 
