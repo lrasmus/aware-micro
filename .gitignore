@@ -4,6 +4,9 @@ deploy/
 ### Vert.x ###
 .vertx/
 
+# IntelliJ
+.idea
+
 ### Eclipse ###
 
 .metadata
