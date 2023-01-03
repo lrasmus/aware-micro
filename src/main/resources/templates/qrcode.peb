@@ -29,7 +29,9 @@
   <div class="box about">
     Thank your for your interest in the <a href="https://www.lcnstudy.org/">Liver Cirrhosis Network (LCN)</a>.  If you are
     an enrolled participant in the LCN study, this site will be used by a member of the LCN study team to help you set up the
-    AWARE data collection app on your smartphone.<br/>
+    AWARE data collection app on your smartphone.  If you have spoken with a member of the LCN study team about setting up AWARE
+    on your own, this site gives you the QR code along with basic instructions. If you need additional help setting up AWARE,
+    please reach out to your local LCN study team member.<br/>
     <br/>
     You should proceed with AWARE setup only if you have agreed to and signed the LCN study informed consent
     with a member of the study team and are comfortable with installing and running the app. Remember that using the
@@ -37,16 +39,16 @@
     affect your participation in LCN.  Additional information about the data to be collected is in your informed consent.
   </div>
   <div class="box">
-    <span class="title">Instructions (to be completed by site study coordinator):</span>
+    <span class="title">Basic Setup Instructions:</span>
     <ol>
-      <li>Download the AWARE client for <a href="https://itunes.apple.com/jp/app/aware-client-v2/id1455986181">iOS</a> or <a href="http://jenkins.awareframework.com/job/com.aware.phone/">Android</a> (depending on participant's phone)</li>
-      <li>Open the app and allow the participant to see and agree to the permission prompts that appear</li>
+      <li>Download the AWARE client for <a href="https://itunes.apple.com/jp/app/aware-client-v2/id1455986181">iOS</a> or <a href="http://jenkins.awareframework.com/job/com.aware.phone/">Android</a> (depending on your phone)</li>
+      <li>Open the app and review the permission prompts that appear. If you are comfortable granting AWARE access to your phone, accept all of the permission requests. If you are not comfortable with this, please stop and remove AWARE from your phone.</li>
       <li>Add a new study</li>
+      <li>Enter an e-mail as the Device Label (e.g., participant@test.com). This should match the e-mail address shared with the LCN team member during enrollment.</li>
       <li>Scan the QR code below</li>
-      <li>Enter the participant's cohort study number as the Device Label (e.g., AB123)</li>
       <li>Perform a data sync to confirm that the device is set up properly</li>
     </ol>
-    <i>More detailed instructions for setting up AWARE and troubleshooting are available in the LCN Manual of Procedures (MOP).</i>
+    <br/>
   </div>
   <div class="box">
     <div>URL to join study: {{ studyURL }}</div>
