@@ -205,8 +205,8 @@ class MainVerticle : AbstractVerticle() {
                 val requestData = JsonObject()
                   .put("table", route.request().getParam("table"))
                   .put("device_id", route.request().getFormAttribute("device_id"))
-                  .put("start", route.request().getFormAttribute("start"))
-                  .put("end", route.request().getFormAttribute("end"))
+                  .put("start", route.request().getFormAttribute("start").toDouble())
+                  .put("end", route.request().getFormAttribute("end").toDouble())
 
                 eventBus.request<JsonArray>("getData", requestData) { response ->
                   if (response.succeeded()) {
@@ -265,10 +265,11 @@ class MainVerticle : AbstractVerticle() {
               vertx.deployVerticle("com.awareframework.micro.WebsocketVerticle")
 
               println("AWARE Micro API at ${getExternalServerHost(serverConfig)}:${getExternalServerPort(serverConfig)}")
+              println("Serving study config: ${getStudyConfig()}")
               startPromise.complete()
             } else {
               println("AWARE Micro initialisation failed! Because: ${server.cause()}")
-              startPromise.fail(server.cause());
+              startPromise.fail(server.cause())
             }
           }
 
@@ -468,8 +469,13 @@ class MainVerticle : AbstractVerticle() {
       plugins.add(pluginOutput)
     }
 
+    val schedulers = parameters.getJsonArray("schedulers")
+
     val output = JsonArray()
     output.add(JsonObject().put("sensors", sensors).put("plugins", plugins))
+    if (schedulers != null) {
+      output.getJsonObject(0).put("schedulers", schedulers)
+    }
     return output
   }
 
@@ -625,12 +631,6 @@ class MainVerticle : AbstractVerticle() {
       }
     }
     return plugins
-  }
-
-  //TODO later with UI - maybe Raghu's new dashboard UI will handle this
-  private fun getSchedulers(): JsonArray {
-    val schedulers = JsonArray()
-    return schedulers
   }
 
   private fun getExternalServerHost(serverConfig: JsonObject): String {
