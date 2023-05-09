@@ -100,8 +100,8 @@ class MySQLVerticle : AbstractVerticle() {
           "screen", "touch",
           // Wi-fi
           "wifi", "sensor_wifi",
-          // Significant
-          "significant",
+          // Significant Motion
+          "significant", "significant_motion",
           // Network
           "network",
           // Scheduler
@@ -115,11 +115,115 @@ class MySQLVerticle : AbstractVerticle() {
           // Network Traffic
           "network_traffic",
           // ESM
-          "esms",
+          "esms", "esm", "plugin_ios_esm",
           // Processor
           "processor",
+          // Memory
+          "memory",
           // Locations
-          "locations"
+          "locations", "location_gps",
+          // Ambient Noise
+          "plugin_ambient_noise",
+          // Labels
+          "labels",
+          // Orientation
+          "orientation",
+          // HealthKit
+          "health_kit",
+          // iOS Activity Recognition
+          "plugin_ios_activity_recognition",
+          // Push Notification
+          "push_notification",
+          // Basic settings
+          "basic_settings",
+          // Location Visit
+          "ios_location_visit",
+          // Fitbit Device
+          "fitbit_device", "fitbit_data",
+          //SENSOR_PLUGIN_GOOGLE_ACTIVITY_RECOGNITION
+          "plugin_google_activity_recognition",
+          // SENSOR_GOOGLE_FUSED_LOCATION
+          "google_fused_location",
+          // SENSOR_PLUGIN_GOOGLE_CAL_PULL
+          "plugin_balancedcampuscalendar",
+          // SENSOR_PLUGIN_GOOGLE_CAL_PUSH
+          "plugin_balancedcampusjournal",
+          // SENSOR_PLUGIN_GOOGLE_LOGIN
+          "plugin_google_login",
+          // SENSOR_PLUGIN_OPEN_WEATHER
+          "plugin_openweather",
+          // SENSOR_PLUGIN_MSBAND
+          "plugin_msband_sensors",
+          // SENSOR_PLUGIN_DEVICE_USAGE
+          "plugin_device_usage",
+          // SENSOR_PLUGIN_NTPTIME
+          "plugin_ntptime",
+          // SENSOR_PLUGIN_SCHEDULER
+          "scheduler",
+          // SENSOR_PLUGIN_CAMPUS
+          "plugin_cmu_esm",
+          // SENSOR_PLUGIN_PEDOMETER
+          "plugin_ios_pedometer",
+          // SENSOR_PLUGIN_WEB_ESM
+          "plugin_web_esm",
+          // SENSOR_PLUGIN_BLE_HEARTRATE
+          "plugin_ble_heartrate",
+          // SENSOR_AWARE_DEBUG
+          "aware_debug",
+          // SENSOR_PLUGIN_IOS_ESM
+          "plugin_ios_esm",
+          // SENSOR_PLUGIN_CONTACTS
+          "plugin_contacts",
+          // SENSOR_BASIC_SETTINGS
+          "plugin_basic_settings",
+          // SENSOR_PLUGIN_CALENDAR
+          "plugin_calendar",
+          // SENSOR_PLUGIN_STUDENTLIFE_AUDIO
+          "plugin_studentlife_audio",
+          // SENSOR_PLUGIN_HEADPHONE_MOTION
+          "plugin_headphone_motion",
+
+          // SENSOR_PLUGIN_BLE_HR
+          "plugin_ble_heartrate",
+          // SENSOR_PLUGIN_FITBIT
+          "plugin_fitbit",
+
+          // SENSOR_PLUGIN_CALENDAR_ESM_SCHEDULER
+          "plugin_calendar_esm_scheduler",
+
+          // SENSOR_PLUGIN_MSBAND_SENSORS_CALORIES
+          "plugin_msband_sensors_calories",
+          // SENSOR_PLUGIN_MSBAND_SENSORS_DEVICECONTACT
+          "plugin_msband_sensors_devicecontact",
+          // SENSOR_PLUGIN_MSBAND_SENSORS_DISTANCE
+          "plugin_msband_sensors_distance",
+          // SENSOR_PLUGIN_MSBAND_SENSORS_HEARTRATE
+          "plugin_msband_sensors_heartrate",
+          // SENSOR_PLUGIN_MSBAND_SENSORS_PEDOMETER
+          "plugin_msband_sensors_pedometer",
+          // SENSOR_PLUGIN_MSBAND_SENSORS_SKINTEMP
+          "plugin_msband_sensors_skintemp",
+          // SENSOR_PLUGIN_MSBAND_SENSORS_UV
+          "plugin_msband_sensors_uv",
+          // SENSOR_PLUGIN_MSBAND_SENSORS_BATTERYGAUGE
+          "plugin_msband_sensors_batterygauge",
+          // SENSOR_PLUGIN_MSBAND_SENSORS_GSR
+          "plugin_msband_sensors_gsr",
+          // SENSOR_PLUGIN_MSBAND_SENSORS_ACC
+          "plugin_msband_sensors_accelerometer",
+          // SENSOR_PLUGIN_MSBAND_SENSORS_GYRO
+          "plugin_msband_sensors_gyroscope",
+          // SENSOR_PLUGIN_MSBAND_SENSORS_ALTIMETER
+          "plugin_msband_sensors_altimeter",
+          // SENSOR_PLUGIN_MSBAND_SENSORS_BAROMETER
+          "plugin_msband_sensors_barometer",
+          // SENSOR_PLUGIN_MSBAND_SENSORS_RRINTERVAL
+          "plugin_msband_sensors_rrinterval",
+
+          // SENSOR_PLUGIN_MSBAND_KEY_ACTIVE_TIME_INTERVAL_IN_MINUTE
+          "active_time_interval_in_minute",
+          // SENSOR_PLUGIN_MSBAND_KEY_ACTIVE_IN_MINUTE
+          "active_time_in_minute"
         )
 
         eventBus.consumer<JsonObject>("insertData") { receivedMessage ->
