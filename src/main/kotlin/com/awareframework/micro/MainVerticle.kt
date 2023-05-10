@@ -122,7 +122,6 @@ class MainVerticle : AbstractVerticle() {
                 "[]"
               ) //NOTE: if we send the configuration, it will keep reapplying the settings on legacy clients. Sending empty JsonArray (i.e., no changes)
               route.response().end(JsonArray().add(status).encode())
-              route.next()
             } else {
               println("Study configuration: ${getStudyConfig().encodePrettily()}")
               route.response().end(getStudyConfig().encode())
