@@ -3,8 +3,29 @@
 {% include './header.peb' %}
 <style>
 {% block style %}{% endblock style %}
+    .alert.warning {
+        width: 800px;
+        text-align: center;
+        margin: 0 auto;
+        margin-bottom: 20px;
+    }
+    .alert.warning .inner {
+        border: 4px solid rgb(238,211,215);
+        background-color: rgb(242,222,222);
+        padding: 20px 10px;
+        color: rgb(140, 44, 42);
+        font-size: 14pt;
+        text-align: center;
+        vertical-align: middle;
+    }
 </style>
 <body>
+<div class="alert warning">
+    <p class="inner">
+        <b>TEST ENVIRONMENT</b> - This server is to be used for testing and training only.<br/>Please do not enroll participants using this server's QR code.
+    </p>
+</div>
+
 {% block content %}{% endblock content %}
 </body>
 </html>
