@@ -1,9 +1,7 @@
 <!doctype html>
 <html lang="en">
 {% include './header.peb' %}
-<style>
-{% block style %}{% endblock style %}
-</style>
+<link rel="stylesheet" href="/cache/styles.css">
 <body>
 {% block content %}{% endblock content %}
 </body>
