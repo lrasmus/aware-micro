@@ -76,7 +76,8 @@ class MainVerticle : AbstractVerticle() {
     router.route().handler(BodyHandler.create())
     router.route("/cache/*").handler(StaticHandler.create("cache"))
     router.route().handler {
-      println("Processing ${it.request().scheme()} ${it.request().method()} : ${it.request().path()} with the following data ${it.request().params().toList()}")
+      //println("Processing ${it.request().scheme()} ${it.request().method()} : ${it.request().path()} with the following data ${it.request().params().toList()}")
+      println("Processing ${it.request().scheme()} ${it.request().method()} : ${it.request().path()}");
       // Set security headers for every response
       it.response()
         // Via https://vertx.io/blog/writing-secure-vert-x-web-apps/
