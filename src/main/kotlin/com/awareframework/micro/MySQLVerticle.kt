@@ -328,7 +328,7 @@ class MySQLVerticle : AbstractVerticle() {
 
   fun deleteData(device_id: String, table: String, data: JsonArray) {
     if (!allowedTableNames.contains(table)) {
-      println("Invalid table name")
+      println("*** Invalid table name: ${table}")
       return
     }
 
