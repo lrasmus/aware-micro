@@ -369,7 +369,7 @@ class MySQLVerticle : AbstractVerticle() {
     sqlClient.getConnection { connectionResult ->
       if (connectionResult.succeeded()) {
         if (!allowedTableNames.contains(table)) {
-          promise.fail("Invalid table name: " + table)
+          promise.fail("Invalid table name: ${table}")
         } else {
           val connect = connectionResult.result()
           connect.query("CREATE TABLE IF NOT EXISTS `$table` (`_id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, `timestamp` DOUBLE NOT NULL, `device_id` VARCHAR(128) NOT NULL, `data` JSON NOT NULL, INDEX `timestamp_device` (`timestamp`, `device_id`))")
