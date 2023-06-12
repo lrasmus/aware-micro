@@ -97,7 +97,7 @@ class MainVerticle : AbstractVerticle() {
 
         // The next from Liran Tal's "Learning Security Headers"
         // Only allow XHR from our host
-        .putHeader("Content-Security-Policy", "connect-src 'self'; frame-ancestors 'none'; form-action: 'self'; object-src 'none'; upgrade-insecure-requests; block-all-mixed-content")
+        .putHeader("Content-Security-Policy", "connect-src 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; script-src 'self'; default-src 'self'; upgrade-insecure-requests; block-all-mixed-content")
         // When navigating off pages don't set referrer
         .putHeader("Referrer-Policy", "no-referrer");
       it.next()
