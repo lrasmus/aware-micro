@@ -63,7 +63,7 @@ class MySQLVerticle : AbstractVerticle() {
         // Establish the curated list of tables that we will allow to be created.
         allowedTableNames = arrayListOf(
           // AWARE Provider
-          "aware_device", "aware_settings", "aware_plugins", "aware_studies", "aware_log",
+          "aware_device", "aware_settings", "aware_plugins", "aware_studies", "aware_log", "ios_aware_log",
           // Applications
           "applications_foreground", "applications_history", "applications_notifications", "applications_crashes",
           // Battery
@@ -369,7 +369,7 @@ class MySQLVerticle : AbstractVerticle() {
     sqlClient.getConnection { connectionResult ->
       if (connectionResult.succeeded()) {
         if (!allowedTableNames.contains(table)) {
-          promise.fail("Invalid table name")
+          promise.fail("Invalid table name: " + table)
         } else {
           val connect = connectionResult.result()
           connect.query("CREATE TABLE IF NOT EXISTS `$table` (`_id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, `timestamp` DOUBLE NOT NULL, `device_id` VARCHAR(128) NOT NULL, `data` JSON NOT NULL, INDEX `timestamp_device` (`timestamp`, `device_id`))")
