@@ -33,6 +33,35 @@ class MainVerticle : AbstractVerticle() {
   private lateinit var parameters: JsonObject
   private lateinit var httpServer: HttpServer
 
+  // Utility function to configure SSL settings (if SSL is enabled)
+  fun configureSSL(serverConfig: JsonObject, serverOptions: HttpServerOptions): HttpServerOptions {
+    //Use SSL
+    if (serverConfig.getString("path_fullchain_pem").isNotEmpty() && serverConfig.getString("path_key_pem").isNotEmpty()) {
+      serverOptions.pemTrustOptions = PemTrustOptions().addCertPath(serverConfig.getString("path_fullchain_pem"))
+      serverOptions.pemKeyCertOptions = PemKeyCertOptions()
+        .setCertPath(serverConfig.getString("path_fullchain_pem"))
+        .setKeyPath(serverConfig.getString("path_key_pem"))
+      serverOptions.isSsl = true
+      // Define the allow list for ciphers.  This list came from identifyng which ciphers were supported via:
+      // jrunscript -e "java.util.Arrays.asList(javax.net.ssl.SSLServerSocketFactory.getDefault().getSupportedCipherSuites()).stream().forEach(println)"
+      // And then cross-referencing this list with recommended ciphers from: https://ciphersuite.info/cs/?sort=sec-asc&singlepage=true
+      serverOptions
+        .addEnabledCipherSuite("TLS_AES_128_GCM_SHA256")
+        .addEnabledCipherSuite("TLS_AES_256_GCM_SHA384")
+        .addEnabledCipherSuite("TLS_CHACHA20_POLY1305_SHA256")
+        .addEnabledCipherSuite("TLS_DHE_DSS_WITH_AES_128_GCM_SHA256")
+        .addEnabledCipherSuite("TLS_DHE_DSS_WITH_AES_256_GCM_SHA384")
+        .addEnabledCipherSuite("TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256")
+        .addEnabledCipherSuite("TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256")
+        .addEnabledCipherSuite("TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384")
+        .addEnabledCipherSuite("TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256")
+        .addEnabledCipherSuite("TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256")
+        .addEnabledCipherSuite("TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384")
+        .addEnabledCipherSuite("TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256");
+    }
+    return serverOptions;
+  }
+
   override fun start(startPromise: Promise<Void>) {
 
     println("AWARE Micro initializing...")
@@ -236,14 +265,7 @@ class MainVerticle : AbstractVerticle() {
           renderStudyPage(route, study, serverConfig, pebbleEngine, false)
         }
 
-        //Use SSL
-        if (serverConfig.getString("path_fullchain_pem").isNotEmpty() && serverConfig.getString("path_key_pem").isNotEmpty()) {
-          serverOptions.pemTrustOptions = PemTrustOptions().addCertPath(serverConfig.getString("path_fullchain_pem"))
-          serverOptions.pemKeyCertOptions = PemKeyCertOptions()
-            .setCertPath(serverConfig.getString("path_fullchain_pem"))
-            .setKeyPath(serverConfig.getString("path_key_pem"))
-          serverOptions.isSsl = true
-        }
+        configureSSL(serverConfig, serverOptions);
 
         httpServer = vertx.createHttpServer(serverOptions)
           .requestHandler(router)
@@ -279,15 +301,7 @@ class MainVerticle : AbstractVerticle() {
           val newServerConfig = newConfig.getJsonObject("server")
           val newServerOptions = HttpServerOptions()
 
-          if (newServerConfig.getString("path_fullchain_pem").isNotEmpty() && newServerConfig.getString("path_key_pem").isNotEmpty()) {
-            newServerOptions.pemTrustOptions =
-              PemTrustOptions().addCertPath(newServerConfig.getString("path_fullchain_pem"))
-
-            newServerOptions.pemKeyCertOptions = PemKeyCertOptions()
-              .setCertPath(newServerConfig.getString("path_fullchain_pem"))
-              .setKeyPath(newServerConfig.getString("path_key_pem"))
-            newServerOptions.isSsl = true
-          }
+          configureSSL(newServerConfig, newServerOptions);
 
           httpServer = vertx.createHttpServer(newServerOptions)
             .requestHandler(router)
