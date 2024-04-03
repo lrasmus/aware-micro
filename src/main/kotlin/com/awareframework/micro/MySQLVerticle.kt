@@ -228,11 +228,12 @@ class MySQLVerticle : AbstractVerticle() {
 
         eventBus.consumer<JsonObject>("insertData") { receivedMessage ->
           val postData = receivedMessage.body()
+          val table = postData.getString("table")
           val device = postData.getString("device_id")
-          println("Processing insert event for ${device}")
+          println("Processing insert event for table ${table} for device ${device}")
           insertData(
             device_id = device,
-            table = postData.getString("table"),
+            table = table,
             data = JsonArray(postData.getString("data"))
           )
         }
@@ -401,6 +402,11 @@ class MySQLVerticle : AbstractVerticle() {
    * Insert batch of data into database table
    */
   fun insertData(table: String, device_id: String, data: JsonArray) {
+    if (data.isEmpty()) {
+      println("Skipping insert from $device_id inserted to $table: no data to insert")
+      return
+    }
+
     createTable(table)
       .onSuccess { _ ->
         sqlClient.getConnection { connectionResult ->
