@@ -55,7 +55,7 @@ class MySQLVerticle : AbstractVerticle() {
           .setPassword(serverConfig.getString("database_pwd"))
         setDatabaseSslMode(serverConfig, connectOptions)
 
-        val poolOptions = PoolOptions().setMaxSize(5)
+        val poolOptions = PoolOptions().setMaxSize(10)
 
         // Create the client pool
         sqlClient = MySQLPool.pool(vertx, connectOptions, poolOptions)
@@ -228,8 +228,10 @@ class MySQLVerticle : AbstractVerticle() {
 
         eventBus.consumer<JsonObject>("insertData") { receivedMessage ->
           val postData = receivedMessage.body()
+          val device = postData.getString("device_id")
+          println("Processing insert event for ${device}")
           insertData(
-            device_id = postData.getString("device_id"),
+            device_id = device,
             table = postData.getString("table"),
             data = JsonArray(postData.getString("data"))
           )
@@ -293,6 +295,9 @@ class MySQLVerticle : AbstractVerticle() {
               .map { row -> row.toJson() }
               .collect(Collectors.toList())))
           }
+      } else {
+        println("Failed to establish connection: ${connectionResult.cause().message}")
+        dataPromise.fail(connectionResult.cause().message)
       }
     }
 
@@ -313,6 +318,7 @@ class MySQLVerticle : AbstractVerticle() {
             .execute()
             .onFailure { e ->
               println("Failed to process update: ${e.message}")
+              println(updateItem)
               connection.close()
             }
             .onSuccess { _ ->
@@ -384,6 +390,7 @@ class MySQLVerticle : AbstractVerticle() {
             }
         }
       } else {
+        println("Failed to get a connection for createTable")
         promise.fail(connectionResult.cause().message)
       }
     }
@@ -414,12 +421,16 @@ class MySQLVerticle : AbstractVerticle() {
               .execute()
               .onFailure { e ->
                 println("Failed to process batch: ${e.message}")
+                println(insertBatch)
                 connection.close()
               }
               .onSuccess { _ ->
                 println("$device_id inserted to $table: $rows records")
                 connection.close()
               }
+          } else {
+            println("Failed to get a connection for insertData")
+            println(connectionResult.cause().message)
           }
         }
       }

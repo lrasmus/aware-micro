@@ -198,13 +198,17 @@ class MainVerticle : AbstractVerticle() {
                 route.response().end()
               }
               "insert" -> {
+                val device = route.request().getFormAttribute("device_id")
                 eventBus.publish(
                   "insertData",
                   JsonObject()
                     .put("table", route.request().getParam("table"))
-                    .put("device_id", route.request().getFormAttribute("device_id"))
+                    .put("device_id", device)
                     .put("data", route.request().getFormAttribute("data"))
                 )
+
+                println("Queued insert event for ${device}")
+
                 route.response().statusCode = 200
                 route.response().end()
               }
